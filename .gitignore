@@ -1,5 +1,7 @@
-build
-tmp
-bin
-velocity.log
+/build
+/tmp
+/bin
+/velocity.log
 target
+.idea
+*.iml
