@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+
+<!-- $Id: build.xml,v 1.9 2009/09/23 20:39:46 klp Exp $ -->
+
+<project name="build.codavaj" default="build" basedir=".">
+
+<!-- setup -->
+    <target name="setup">
+
+		<property name="build.dir"                value="${basedir}/build"/>
+    	<property name="codavaj.version"          value="codavaj-1.3.0"/>
+		<property name="package.jar"              value="${build.dir}/${codavaj.version}.jar"/>
+		<property name="package.dir"              value="${build.dir}/${codavaj.version}"/>
+		<property name="package.file"             value="${build.dir}/${codavaj.version}.zip"/>
+		<property name="doc.file"                 value="${build.dir}/${codavaj.version}-doc.zip"/>
+    				
+        <property name="src"                      value="${basedir}/src"/>
+        <property name="lib"                      value="${basedir}/lib"/>
+
+        <property name="flag.debug"               value="on"/>
+        <property name="flag.optimize"            value="off"/>
+		<property name="flag.target"              value="1.5"/>
+
+    </target>
+
+<!-- clean -->
+    <target name="clean" depends="setup">
+        <delete dir="${build.dir}"/>
+    </target>
+
+<!-- prepare -->
+    <target name="prepare" depends="setup" >
+    	<!-- make directories -->
+        <mkdir dir="${build.dir}"/>
+    </target>
+        
+<!-- compile -->
+    <target name="compile" depends="prepare" >
+        <mkdir dir="${build.dir}/classes"/>
+    	
+		<path id="compile.path">
+	      <fileset dir="${lib}">
+	        <include name="**/*.jar"/>
+	        <include name="**/*.zip"/>
+	      </fileset>
+	    </path>
+
+        <javac
+            destdir="${build.dir}/classes"
+			target="${flag.target}"
+            deprecation="on"
+            optimize="${flag.optimize}"
+            debug="${flag.debug}" >
+            <src path="${src}"/>
+			<classpath refid="compile.path"/>
+        </javac>
+    </target>
+        
+<!-- build -->
+    <target name="build" depends="clean,compile">
+		<jar jarfile="${package.jar}" basedir="${build.dir}/classes" />
+    </target>
+    
+<!-- package -->
+    <target name="package" depends="build">
+        <mkdir dir="${package.dir}"/>
+    	<copy todir="${package.dir}">
+    		<fileset file="${package.jar}">
+    		</fileset>
+    		<fileset dir="${basedir}">
+    			<include name="codavaj.*"/>
+    			<include name="lib/**"/>
+    			<include name="src/**"/>
+    			<include name="README.txt"/>
+    			<include name="codavaj-LICENSE.txt"/>
+    			<exclude name="*/site/**"/>
+    		</fileset>
+    	</copy>
+    		
+    	<zip destfile="${package.file}" duplicate="fail">
+    		<zipfileset dir="${package.dir}" prefix="${codavaj.version}"/>
+    	</zip>
+    </target>
+    
+<!-- packagedoc -->
+    <target name="packagedoc" depends="setup">
+    	<zip basedir="target/site" destfile="${doc.file}" duplicate="fail"></zip>
+    </target>
+	
+</project>
