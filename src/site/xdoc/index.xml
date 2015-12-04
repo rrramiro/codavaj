@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document>
+ <properties>
+  <title>codavaj</title>
+ </properties>
+ <head>
+  <link rel="icon" href="favicon.ico" />
+ </head>
+  <body>
+  	<!-- <section> -->
+  	    <subsection name="What is codavaj?">
+	      	<p>
+	      	codavaj is javadoc in reverse. A seemingly useless tool. Arguably of interest only to the most hardcore java hackers. A "must have" in every geek's software toolbox.
+            </p>
+	    </subsection>
+	    <subsection name="What is codavaj really?">
+	    	<p>Codavaj is a reverse engineering tool with focus on Javadoc. Currently codavaj is distributed as
+	           a command line tool ( codavaj.cmd/sh - using org.codavaj.Main class ). A 100% java tool. Codavaj supports Java6 language constructs including Generics and Annotations.
+	    	</p>
+	    	<p>You can
+		    	<ul>
+		    		<li>convert an entire local javadoc tree into java source code.
+		    		</li>
+		    		<li>download an entire remote javadoc tree via http(s).
+		    		</li>
+		    		<li>derive a Reflection-like API based on information derived from
+		    		    a javadoc tree.
+		    		</li>
+		    	</ul>
+	    	</p>
+	    	<p>Codavaj works by converting javadoc HTML into XML ( using Nekohtml ) and then successively
+	    	   deriving class information from the XML using XPATH queries ( using dom4j ).
+	    	</p>
+	    	<p>Known limitations
+	    	<ul>
+	    	<li>Generated constructors have implicit superclass call - which does not suffice to compile for all class heirarchies.</li>
+	    	<li>Codavaj does not 100% acurately reconstruct the source code comments. @author, @since tags are not currently preserved accurately.</li>
+	    	</ul>
+	    	</p>
+	   	</subsection>
+	    <subsection name="Why?">
+	      	<p>Not because i lost the sources for some code - but miraculously still had the javadoc for it!
+	      	   This wouldn't help much anyway because codavaj leaves you with a TODO for each method 
+	      	   implementation.
+            </p>
+            <p>Codavaj can potentially be used as part of an exploit to de-obfuscate compiled java code, with the precondition that the javadoc is availible for the code in question. 
+               This is often the case for libraries where the API is documented publicly on the internet but the library itself is distributed with demo's and other third party products obfuscated. 
+               The trick? Typical obfuscation tools obfuscate code and at the same time provide an output mapping file which can be used to unobfuscate the obfuscated code.
+               Use such an obfuscation tool on an already obfuscated code ( some other obfuscator ). This will supply a mapping file and re-obfuscated code. Using the type information
+               derived by Codavaj from the javadocs, perform an analysis on the re-obfuscated code and determine the best or most plausible match to the original structure. This part of the
+               procedure is not provided in Codavaj. Once a reverse mapping is determined, apply the reverse mapping to the mapping file and the obfuscator will magically turn the re-obfuscated
+               code into something a bit more useable - at least the API part. This potential didn't go unnoticed - the prize goes to Andreou Dimitris for emailing me back in Nov. 2006.   
+            </p>
+            <p>For me this was simply an intellectual challenge - a side
+               battle in a hobby programmer's grand master plan.  As a bonus i managed to improve my 
+               XPATH query skills a bit. It took me 2 full working weeks to get
+               the initial version out. If I needed this once, then there's bound to be someone out there
+               who might like to use it, for whatever reason. It probably will save them the 2 weeks too.
+            </p>
+	    </subsection>
+	    <subsection name="Running Codavaj">
+	    	<p>The full distribution zip contains all jar dependencies required for running 
+	    	   codavaj. For convenience a 'codavaj.cmd' and 'codavaj.sh' shell script ( for Windows and Linux respectively ) is provided in the 
+	    	   distribution for starting codavaj with it's many jar dependencies.
+	    	</p>
+	    	<p>to download an entire javadoc tree for further processing use
+		    	<ul>
+		    		<li>codavaj.cmd wget &lt;URL&gt; &lt;destination-dir&gt;
+		    		</li>
+		    		<li>codavaj.cmd wget http://jumpi.sourceforge.net/javadoc/j2se tmp/jumpi/javadoc
+		    		</li>
+		    	</ul>
+			</p>
+			<p>to convert local javadoc tree into java source
+		    	<ul>
+		    		<li>codavaj.cmd codavaj &lt;javadoc-dir&gt; &lt;javasource-dir&gt; {&lt;external-link&gt;}*
+		    		</li>
+		    	</ul>
+            </p>
+            <p>Example without external links: codavaj.cmd codavaj tmp/jumpi/javadoc tmp/jumpi/src
+            </p>
+            <p>Example with external links: codavaj.cmd codavaj tmp/jumpi/javadoc tmp/jumpi/src http://external.link.com/api/ http://external.link2.com/api/
+            </p>
+	    </subsection>
+	    <subsection name="Codavaj &quot;Reflection-like&quot; API">
+	    	<p>Codavaj preserves all javadoc information including all fields, methods, constructors and their modifiers,
+	    	   constant values, class heirarchy and inner types.
+	    	</p>
+	    	<p>You can use the following function in org.codavaj.Main to derive the reflection-like
+	    	   API:
+	    	<source>
+    /**
+     * Derive a reflection-like API from a javadoc source tree. Resolve any type names
+     * to external javadoc links. External links to Sun's JDK javadoc apis are 
+     * automatically resolved ( i.e. http://java.sun.com/j2se/X/docs/api/ ) 
+     * 
+     * @param javadocdir the javadoc tree root
+     * @param externaLinks a list of 'http://..' strings representing external javadoc refs.
+     * 
+     * @return a TypeFactory handle on the resulting api
+     * @throws Exception any problem.
+     */
+    public static TypeFactory analyze( String javadocdir, List externalLinks ) throws Exception {
+        ProcessMonitor pm = new Main().new ProcessMonitor();
+        
+        DocParser dp = new DocParser();
+        dp.setJavadocDirName(javadocdir);
+        dp.setExternalLinks(externalLinks);
+        dp.addProgressListener(pm);
+        dp.process();
+
+        return dp.getTypeFactory();
+    }
+	    	</source>
+            </p>
+            <p>Through the TypeFactory, you can get at Types ( Classes or Interface - both inner and outer ),
+               and their respective Packages.
+               A Type contains fields ( Field ), constructors and methods ( Method ), and inner types ( Type ).
+               See the source code here for more information - and the SrcWriter class which traverses the
+               Types to write java source files. Packages can be traversed for access to
+               it's Types and sub Packages.
+            </p>
+	    </subsection>
+	    <subsection name="Acknowledgements">
+	    	<p>Codavaj builds vertically on many great Open Source Projects - without which codavaj would not exist.
+               <a target="_blank" href="http://httpunit.sourceforge.net/">HttpUnit</a>, 
+               <a target="_blank" href="http://people.apache.org/~andyc/neko/doc/html/">Nekohtml</a>, 
+               <a target="_blank" href="http://dom4j.org/">Dom4j</a> and several others indirectly.
+               Many thanks to their project contributors!
+	    	</p>
+	    	<p>Bug fix and contribution complements go to - Yevgeny Rouban and Brian Koehmstedt</p>
+	    </subsection>
+		<p><a href="http://sourceforge.net" target="_blank"><img src="http://sourceforge.net/sflogo.php?group_id=151776&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a></p>
+  	<!-- </section> -->
+  </body>
+</document>
