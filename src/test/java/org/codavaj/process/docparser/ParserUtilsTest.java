@@ -14,9 +14,6 @@ public class ParserUtilsTest extends TestCase {
 
     private ParserUtils parserUtil = new ParserUtils();
     
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(LinkUtilsTest.class);
-    }
     /*
       */
     public void testImplementsListClass() throws Exception {

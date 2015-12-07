@@ -8,9 +8,6 @@ public class LinkUtilsTest extends TestCase {
 
     private LinkUtils linkUtil = new LinkUtils();
     
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(LinkUtilsTest.class);
-    }
 
    /*
      * Test method for 'org.codavaj.process.wget.LinkUtils.normalizeUrl(String)'

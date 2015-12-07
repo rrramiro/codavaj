@@ -17,11 +17,7 @@ public class JarJavadocComparisonTests extends TestCase implements ProgressListe
         System.out.println(event);
     }
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(JarJavadocComparisonTests.class);
-    }
-
-    
+    /*
     public void test_jumpi() throws Exception {
         JarFile jar = new JarFile( "tmp/jumpi/jumpi.jar" );
 
@@ -66,5 +62,5 @@ public class JarJavadocComparisonTests extends TestCase implements ProgressListe
         verifier.checkJarAgainstJavadoc(jar, cl, typeFactory, Modifier.PUBLIC );
         Dumper.dump(typeFactory);
     }
-    
+    */
 }

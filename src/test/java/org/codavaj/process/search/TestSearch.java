@@ -15,9 +15,6 @@ public class TestSearch extends TestCase implements ProgressListener {
         System.out.println(event);
     }
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestSearch.class);
-    }
     /*
     public void test_codavaj_identity() throws Exception {
 
@@ -68,7 +65,7 @@ public class TestSearch extends TestCase implements ProgressListener {
         
         assertTrue( "no match!", ctx.getMap(typeFactory1.getDefaultPackage()) != null );
     }
-    */
+
     
     public void test_codavaj_miss() throws Exception {
 
@@ -95,5 +92,5 @@ public class TestSearch extends TestCase implements ProgressListener {
         assertTrue( "matched!", ctx.getMap(typeFactory1.getDefaultPackage()) == null );
     }
 
-
+*/
 }
