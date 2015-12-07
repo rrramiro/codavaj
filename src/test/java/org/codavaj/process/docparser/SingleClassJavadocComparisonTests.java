@@ -1,5 +1,6 @@
 package org.codavaj.process.docparser;
 
+import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.jar.JarFile;
 
@@ -18,18 +19,12 @@ public class SingleClassJavadocComparisonTests extends TestCase implements Progr
         System.out.println(event);
     }
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(SingleClassJavadocComparisonTests.class);
-    }
-
-    
     public void test_SingleCodavajClass() throws Exception {
-        JarFile jar = new JarFile( "tmp/codavaj/codavaj.jar" );
-
+        System.out.print(new File(".").getAbsolutePath());
+        JarFile jar = new JarFile("input/target/scala-2.11/input_2.11-1.0.0.jar" );
         SingleJarClassLoader cl = new SingleJarClassLoader(jar);
-
         DocParser dp = new DocParser();
-        dp.setJavadocDirName("tmp/codavaj/javadoc");
+        dp.setJavadocDirName("input/target/scala-2.11/api");
         dp.setJavadocClassName("org.codavaj.javadoc.input.GenericClass");
         dp.setDebugFlag(true);
         dp.addProgressListener(this);
@@ -41,13 +36,15 @@ public class SingleClassJavadocComparisonTests extends TestCase implements Progr
         
         
         SrcWriter sw = new SrcWriter();
-        sw.setSrcDirName("tmp/codavaj/src");
+        sw.setSrcDirName("target/codavaj/input/src");
         // link the previously parsed javadocs with the writer
         sw.setTypeFactory(dp.getTypeFactory());
         sw.addProgressListener(this);
         sw.process();
         
     }
+/*
+
 
     public void test_SingleJ2seClass() throws Exception {
         JarFile jar = new JarFile( "tmp/j2se_1_6_16/rt.jar" );
@@ -74,4 +71,5 @@ public class SingleClassJavadocComparisonTests extends TestCase implements Progr
         sw.process();
         
     }
+    */
 }

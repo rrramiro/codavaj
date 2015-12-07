@@ -17,10 +17,7 @@ public class TestJarLoader extends TestCase implements ProgressListener {
         System.out.println(event);
     }
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJarLoader.class);
-    }
-    
+    /*
     public void test_jumpi() throws Exception {
 
         JarLoader loader = new JarLoader();
@@ -49,6 +46,6 @@ public class TestJarLoader extends TestCase implements ProgressListener {
         TypeFactory typeFactory = loader.getTypeFactory();
         Dumper.dump(typeFactory);
     }
-
+*/
 
 }
